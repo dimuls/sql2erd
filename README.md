@@ -10,9 +10,10 @@ Usage:
   sql2erd [flags]
 
 Flags:
-  -h, --help         help for sql2erd
-      --in string     (default "-")
-      --out string    (default "-")
+  -h, --help           help for sql2erd
+  -i, --in string      path to input sql file, or "-" for stdin (default "-")
+  -o, --out string     path to output svg file, or "-" for stdout (default "-")
+  -t, --theme string   theme: "light" or "dark" (default "light")
 ```
 
 ## Example

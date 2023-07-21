@@ -21,9 +21,17 @@ import (
 	"oss.terrastruct.com/d2/lib/textmeasure"
 )
 
+type Theme int
+
+const (
+	LightTheme Theme = 0
+	DarkTheme  Theme = 200
+)
+
 type Renderer struct {
-	In  io.Reader
-	Out io.Writer
+	Theme Theme
+	In    io.Reader
+	Out   io.Writer
 }
 
 type column struct {
@@ -128,11 +136,20 @@ loop:
 
 				if n.References.Table != nil {
 					c.references = true
+
+					var (
+						toColumns []string
+						toColumn  = n.References.Col.Normalize()
+					)
+					if name != toColumn {
+						toColumns = append(toColumns, toColumn)
+					}
+
 					references = append(references, reference{
 						fromTable:   t.name,
 						toTable:     n.References.Table.TableName.Normalize(),
 						fromColumns: []string{name},
-						toColumns:   []string{n.References.Col.Normalize()},
+						toColumns:   toColumns,
 					})
 				}
 
@@ -394,15 +411,17 @@ loop:
 	ruler, _ := textmeasure.NewRuler()
 
 	diagram, _, err := d2lib.Compile(context.Background(), script, &d2lib.CompileOptions{
-		Layout: d2elklayout.DefaultLayout,
-		Ruler:  ruler,
+		Layout:  d2elklayout.DefaultLayout,
+		Ruler:   ruler,
+		ThemeID: int64(r.Theme),
 	})
 	if err != nil {
 		return fmt.Errorf("create diagram: %w", err)
 	}
 
 	out, err := d2svg.Render(diagram, &d2svg.RenderOpts{
-		Pad: d2svg.DEFAULT_PADDING,
+		Pad:     d2svg.DEFAULT_PADDING,
+		ThemeID: int64(r.Theme),
 	})
 	if err != nil {
 		return fmt.Errorf("d2svg render: %w", err)
