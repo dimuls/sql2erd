@@ -27,4 +27,3 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: ./cmd/sql2erd
           build_flags: -trimpath
-          executable_compression: upx
